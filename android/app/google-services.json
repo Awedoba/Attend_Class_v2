@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "521596580234",
+    "firebase_url": "https://attendclass-1ac1b.firebaseio.com",
+    "project_id": "attendclass-1ac1b",
+    "storage_bucket": "attendclass-1ac1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521596580234:android:f67da630292c4fe9ad9873",
+        "android_client_info": {
+          "package_name": "com.example.attend_classv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521596580234-gp4nc5bmfc89q27leosm2icotcssguhq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe1Kz2vtenbbxnV_M2q2GF44d9Ij20jM0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521596580234-gp4nc5bmfc89q27leosm2icotcssguhq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
