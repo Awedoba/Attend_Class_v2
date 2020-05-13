@@ -1,15 +1,19 @@
-import 'package:attend_classv2/services/database_services.dart';
+import 'package:attend_classv2/screens/lecturer/attendanceLog_screen.dart';
 import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
-class StartClass extends StatefulWidget {
+class PickStudentGroupAttendace extends StatefulWidget {
   final String userId, courseId;
-  StartClass({this.userId, this.courseId});
+  PickStudentGroupAttendace({
+    this.userId,
+    this.courseId,
+  });
   @override
-  _StartClassState createState() => _StartClassState();
+  _PickStudentGroupAttendaceState createState() =>
+      _PickStudentGroupAttendaceState();
 }
 
-class _StartClassState extends State<StartClass> {
+class _PickStudentGroupAttendaceState extends State<PickStudentGroupAttendace> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -50,14 +54,15 @@ class _StartClassState extends State<StartClass> {
                           studentGroups[index].data['group'],
                         ),
                         onTap: () {
-                          setState(() {
-                            DataBaseServices.startClass(
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                AttendanceLogScreen(
                               userId: widget.userId,
                               courseId: widget.courseId,
                               studentGroup: studentGroups[index].data['group'],
-                            );
-                            Navigator.pop(context);
-                          });
+                            ),
+                          ));
+                          // Navigator.pop(context);
                         },
                       ),
                     );

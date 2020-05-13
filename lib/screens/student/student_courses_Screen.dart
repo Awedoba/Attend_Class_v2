@@ -1,5 +1,6 @@
 import 'package:attend_classv2/screens/student/Student_course_details_screen.dart';
 import 'package:attend_classv2/services/auth_services.dart';
+import 'package:attend_classv2/services/database_services.dart';
 import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -70,6 +71,8 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                         }
                         bool isActive = snapshot.data['isActive'];
                         String classActiveFor = snapshot.data['for'];
+                        int currentTotal = snapshot.data['totalClasses'];
+
                         //  is the student a moring evening etc.
                         return FutureBuilder(
                           future: usersRef.document(widget.userId).get(),
@@ -81,13 +84,20 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                               );
                             }
                             String studentGroup = snapshot.data['studentGroup'];
-                            // print('isActive $isActive');
-                            // print('classActiveFor $classActiveFor');
-                            // print('studentGroup $studentGroup');
+                            String indexNumber = snapshot.data['indexNumber'];
+                            String name = snapshot.data['name'];
+
                             if (isActive && classActiveFor == studentGroup) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: displayActiveCourse(courses[index]),
+                                child: displayActiveCourse(
+                                  course: courses[index],
+                                  studentName: name,
+                                  studentGroup: classActiveFor,
+                                  lecturerId: lecturerId,
+                                  indexnumber: indexNumber,
+                                  currentTotal: currentTotal,
+                                ),
                               );
                             }
                             return Padding(
@@ -155,9 +165,23 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
     );
   }
 
-  Widget displayActiveCourse(course) {
+  Widget displayActiveCourse(
+      {course,
+      studentName,
+      indexnumber,
+      currentTotal,
+      studentGroup,
+      lecturerId}) {
     return InkWell(
       onDoubleTap: () {
+        DataBaseServices.attendClass(
+          courseId: course.documentID,
+          studentName: studentName,
+          indexnumber: indexnumber,
+          currentTotal: currentTotal,
+          studentGroup: studentGroup,
+          lecturerId: lecturerId,
+        );
         print('you have attended class');
       },
       onTap: () => Navigator.of(context).push(

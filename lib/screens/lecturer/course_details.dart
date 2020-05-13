@@ -1,3 +1,4 @@
+import 'package:attend_classv2/screens/lecturer/pickStudentGroupAttendance_screen.dart';
 import 'package:attend_classv2/screens/lecturer/start_class.dart';
 import 'package:attend_classv2/services/database_services.dart';
 import 'package:attend_classv2/utilities/constants.dart';
@@ -6,9 +7,8 @@ import 'package:flutter/material.dart';
 class CourseDetails extends StatefulWidget {
   static final String id = 'course_details.dart';
   final String userId, courseId, courseName;
-  final int totalClasses;
-  CourseDetails(
-      {this.userId, this.courseId, this.totalClasses, this.courseName});
+
+  CourseDetails({this.userId, this.courseId, this.courseName});
   @override
   _CourseDetailsState createState() => _CourseDetailsState();
 }
@@ -22,23 +22,11 @@ class _CourseDetailsState extends State<CourseDetails> {
     // print(isActive);
   }
 
-  // checkIfClassStart() async {
-  //   isActive = await usersRef
-  //       .document(widget.userId)
-  //       .collection('courses')
-  //       .document(widget.courseId)
-  //       .get()
-  //       .then((doc) {
-  //     return doc['isActive'];
-  //   });
-  //   // print('$isActive 2');
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('courseName'),
+        title: Text(widget.courseName),
         centerTitle: true,
       ),
       body: Column(
@@ -50,7 +38,14 @@ class _CourseDetailsState extends State<CourseDetails> {
                 .document(widget.courseId)
                 .snapshots(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
               bool isActive = snapshot.data['isActive'];
+              String studentGroup = snapshot.data['for'];
+              int total = snapshot.data['$studentGroup' + 'Total'];
               // print(snapshot.data['isActive']);
               // print('$isActive not');
               return isActive
@@ -58,10 +53,8 @@ class _CourseDetailsState extends State<CourseDetails> {
                       'End class',
                       () {
                         setState(() {
-                          DataBaseServices.endClass(
-                            widget.userId,
-                            widget.courseId,
-                          );
+                          DataBaseServices.endClass(widget.userId,
+                              widget.courseId, studentGroup, total);
                           // checkIfClassStart();
                         });
                       },
@@ -77,7 +70,6 @@ class _CourseDetailsState extends State<CourseDetails> {
                                   child: StartClass(
                                     courseId: widget.courseId,
                                     userId: widget.userId,
-                                    totalClasses: widget.totalClasses,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
@@ -107,7 +99,24 @@ class _CourseDetailsState extends State<CourseDetails> {
           ),
           buildCourseDetailBtn(
             'Addentace History',
-            () => print('history'),
+            () {
+              setState(() {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: PickStudentGroupAttendace(
+                          courseId: widget.courseId,
+                          userId: widget.userId,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      );
+                    });
+                // checkIfClassStart();
+              });
+            },
           ),
         ],
       ),

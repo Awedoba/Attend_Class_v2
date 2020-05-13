@@ -82,7 +82,6 @@ class _LecturerCourseScreenState extends State<LecturerCourseScreen> {
           builder: (BuildContext context) => CourseDetails(
             courseId: course.documentID,
             userId: widget.userId,
-            totalClasses: course.data['totalClasses'],
             courseName: course.data['name'],
           ),
         ),
