@@ -72,7 +72,8 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                         }
                         bool isActive = snapshot.data['isActive'];
                         String classActiveFor = snapshot.data['for'];
-                        int currentTotal = snapshot.data['totalClasses'];
+                        int currentTotal =
+                            snapshot.data['$classActiveFor' + 'Total'];
 
                         //  is the student a moring evening etc.
                         return FutureBuilder(

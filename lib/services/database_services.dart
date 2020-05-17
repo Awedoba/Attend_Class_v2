@@ -74,11 +74,12 @@ class DataBaseServices {
       lecturerId,
       courseId,
       studentGroup}) {
+    print('we made it');
     String attendanceLogId =
         lecturerId.trim() + '_' + courseId.trim() + '_' + studentGroup;
     //studentname, indexnumber,lecID+courseID+studentGroup
-    int currenttotal = currentTotal;
-    int oldtotal = currenttotal - 1;
+    print(currentTotal);
+    int oldtotal = currentTotal - 1;
     attendanceLog
         .document(attendanceLogId)
         .collection('students')

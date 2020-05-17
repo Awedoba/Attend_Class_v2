@@ -150,7 +150,7 @@ class _CourseDetailsState extends State<CourseDetails> {
             },
           ),
           buildCourseDetailBtn(
-            'Addentace History',
+            'Attendance History',
             () {
               setState(() {
                 showDialog(
