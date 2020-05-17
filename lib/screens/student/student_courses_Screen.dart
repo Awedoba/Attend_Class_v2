@@ -1,3 +1,4 @@
+import 'package:attend_classv2/screens/lecturer/add_to_attendance_log.dart';
 import 'package:attend_classv2/screens/student/Student_course_details_screen.dart';
 import 'package:attend_classv2/services/auth_services.dart';
 import 'package:attend_classv2/services/database_services.dart';
@@ -165,6 +166,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
     );
   }
 
+// ///////////////////////////////////////////
   Widget displayActiveCourse(
       {course,
       studentName,
@@ -183,6 +185,26 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
           lecturerId: lecturerId,
         );
         print('you have attended class');
+      },
+      onLongPress: () {
+        setState(() {
+          showDialog(
+              barrierDismissible: true,
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  child: AddToAttendanceList(
+                    courseId: course.documentID,
+                    studentGroup: studentGroup,
+                    currentTotal: currentTotal,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                );
+              });
+          // checkIfClassStart();
+        });
       },
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(

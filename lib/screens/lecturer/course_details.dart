@@ -1,4 +1,6 @@
+import 'package:attend_classv2/screens/lecturer/add_to_attendance_log.dart';
 import 'package:attend_classv2/screens/lecturer/pickStudentGroupAttendance_screen.dart';
+import 'package:attend_classv2/screens/lecturer/pickStudentGroupCourseRep.dart';
 import 'package:attend_classv2/screens/lecturer/start_class.dart';
 import 'package:attend_classv2/services/database_services.dart';
 import 'package:attend_classv2/utilities/constants.dart';
@@ -14,7 +16,9 @@ class CourseDetails extends StatefulWidget {
 }
 
 class _CourseDetailsState extends State<CourseDetails> {
-  // bool isActive = true;
+  bool isActive = false;
+  String studentGroup;
+  int total = 0;
   @override
   void initState() {
     // checkIfClassStart();
@@ -43,9 +47,9 @@ class _CourseDetailsState extends State<CourseDetails> {
                   child: CircularProgressIndicator(),
                 );
               }
-              bool isActive = snapshot.data['isActive'];
-              String studentGroup = snapshot.data['for'];
-              int total = snapshot.data['$studentGroup' + 'Total'];
+              isActive = snapshot.data['isActive'];
+              studentGroup = snapshot.data['for'];
+              total = snapshot.data['$studentGroup' + 'Total'];
               // print(snapshot.data['isActive']);
               // print('$isActive not');
               return isActive
@@ -86,16 +90,64 @@ class _CourseDetailsState extends State<CourseDetails> {
           // !isActive
 
           buildCourseDetailBtn(
-            'Add course Representative',
-            () => print('add rep'),
-          ),
-          buildCourseDetailBtn(
             'Course Representative',
-            () => print('rep'),
+            () {
+              setState(() {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: PickStudentGroupCourseRep(
+                          courseId: widget.courseId,
+                          userId: widget.userId,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      );
+                    });
+                // checkIfClassStart();
+              });
+            },
           ),
+          // buildCourseDetailBtn(
+          //   'Course Representative',
+          //   () {
+          //     print('rep');
+          //     Scaffold.of(context).showSnackBar(
+          //       SnackBar(
+          //         content: Text('hjghghghjg'),
+          //       ),
+          //     );
+          //   },
+          // ),
           buildCourseDetailBtn(
             'Add student to Attendance Log',
-            () => print('log'),
+            // () => print('log'),
+            () {
+              if (isActive) {
+                setState(() {
+                  showDialog(
+                      barrierDismissible: true,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          child: AddToAttendanceList(
+                            courseId: widget.courseId,
+                            studentGroup: studentGroup,
+                            currentTotal: total,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                        );
+                      });
+                  // checkIfClassStart();
+                });
+              } else {
+                print('nope');
+              }
+            },
           ),
           buildCourseDetailBtn(
             'Addentace History',
@@ -123,7 +175,10 @@ class _CourseDetailsState extends State<CourseDetails> {
     );
   }
 
-  Padding buildCourseDetailBtn(String title, VoidCallback onTap) {
+  Padding buildCourseDetailBtn(
+    String title,
+    VoidCallback onTap,
+  ) {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: InkWell(
