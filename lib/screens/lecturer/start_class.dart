@@ -1,6 +1,7 @@
 import 'package:attend_classv2/services/database_services.dart';
 import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class StartClass extends StatefulWidget {
   final String userId, courseId;
@@ -10,6 +11,14 @@ class StartClass extends StatefulWidget {
 }
 
 class _StartClassState extends State<StartClass> {
+  Position _position;
+  _getCurrentLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print(position);
+    _position = position;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -50,14 +59,19 @@ class _StartClassState extends State<StartClass> {
                           studentGroups[index].data['group'],
                         ),
                         onTap: () {
-                          setState(() {
-                            DataBaseServices.startClass(
-                              userId: widget.userId,
-                              courseId: widget.courseId,
-                              studentGroup: studentGroups[index].data['group'],
-                            );
-                            Navigator.pop(context);
-                          });
+                          _getCurrentLocation();
+                          if (_position != null) {
+                            setState(() {
+                              DataBaseServices.startClass(
+                                userId: widget.userId,
+                                courseId: widget.courseId,
+                                studentGroup:
+                                    studentGroups[index].data['group'],
+                                position: _position,
+                              );
+                              Navigator.pop(context);
+                            });
+                          }
                         },
                       ),
                     );

@@ -1,13 +1,19 @@
 import 'package:attend_classv2/models/student_attendance.dart';
+import 'package:attend_classv2/models/user_model.dart';
 import 'package:attend_classv2/utilities/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 
 class DataBaseServices {
-  static void startClass({
-    userId,
-    courseId,
-    studentGroup,
-  }) {
+  static void updateUser(User user) {
+    usersRef.document(user.id).updateData({
+      'faceId': user.faceId,
+    });
+  }
+
+  static void startClass({userId, courseId, studentGroup, Position position}) {
+    GeoPoint lecturerlocation =
+        new GeoPoint(position.latitude, position.longitude);
     usersRef
         .document(userId)
         .collection('courses')
@@ -17,6 +23,7 @@ class DataBaseServices {
       'for': studentGroup,
       // '$studentGroup' + 'Total': totalClasses + 1,
       '$studentGroup' + 'Total': FieldValue.increment(1),
+      'classLocation': lecturerlocation,
     });
   }
 
@@ -28,6 +35,7 @@ class DataBaseServices {
         .updateData({
       'isActive': false,
       'for': '',
+      'classLocation': '',
       // 'totalClasses':
     });
     updateStudentAtendance(studentGroup, userId, courseId, total);
