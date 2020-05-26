@@ -1,5 +1,4 @@
 import 'package:attend_classv2/services/database_services.dart';
-import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -22,10 +21,7 @@ class _StartClassState extends State<StartClass> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: usersRef
-          .document(widget.userId)
-          .collection('StudentGroup')
-          .getDocuments(),
+      future: DataBaseServices.getStudentGroups(widget.userId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return Center(

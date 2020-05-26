@@ -1,6 +1,5 @@
 import 'package:attend_classv2/screens/widgets/comfirmation.dart';
 import 'package:attend_classv2/services/database_services.dart';
-import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
 class CourseRepScreen extends StatefulWidget {
@@ -117,12 +116,14 @@ class _CourseRepScreenState extends State<CourseRepScreen> {
               ),
             ),
             FutureBuilder(
-              future: usersRef
-                  .document(widget.userId)
-                  .collection('courses')
-                  .document(widget.courseId)
-                  .collection('courseReps')
-                  .getDocuments(),
+              future:
+                  DataBaseServices.getCourseRep(widget.userId, widget.courseId),
+              // usersRef
+              //     .document(widget.userId)
+              //     .collection('courses')
+              //     .document(widget.courseId)
+              //     .collection('courseReps')
+              //     .getDocuments(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
@@ -151,17 +152,19 @@ class _CourseRepScreenState extends State<CourseRepScreen> {
                                       subText:
                                           'Do you want to remove the Course Representatives',
                                       onPressed: () {
-                                        DataBaseServices.makeStudentNotClassRep(
-                                          classReps[index]['studentId'],
-                                          widget.courseId,
-                                        );
-                                        DataBaseServices
-                                            .removeFromLecturerCouseRepList(
-                                          widget.userId,
-                                          widget.courseId,
-                                          classReps[index].documentID,
-                                        );
                                         setState(() {
+                                          DataBaseServices
+                                              .makeStudentNotClassRep(
+                                            classReps[index]['studentId'],
+                                            widget.courseId,
+                                          );
+                                          DataBaseServices
+                                              .removeFromLecturerCouseRepList(
+                                            widget.userId,
+                                            widget.courseId,
+                                            classReps[index].documentID,
+                                          );
+
                                           Navigator.pop(context);
                                         });
                                       },

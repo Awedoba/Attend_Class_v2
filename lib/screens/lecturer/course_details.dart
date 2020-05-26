@@ -3,7 +3,6 @@ import 'package:attend_classv2/screens/lecturer/pickStudentGroupAttendance_scree
 import 'package:attend_classv2/screens/lecturer/pickStudentGroupCourseRep.dart';
 import 'package:attend_classv2/screens/lecturer/start_class.dart';
 import 'package:attend_classv2/services/database_services.dart';
-import 'package:attend_classv2/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
 class CourseDetails extends StatefulWidget {
@@ -36,11 +35,13 @@ class _CourseDetailsState extends State<CourseDetails> {
       body: Column(
         children: <Widget>[
           StreamBuilder(
-            stream: usersRef
-                .document(widget.userId)
-                .collection('courses')
-                .document(widget.courseId)
-                .snapshots(),
+            stream: DataBaseServices.getCourseStream(
+                widget.userId, widget.courseId),
+            // usersRef
+            //     .document(widget.userId)
+            //     .collection('courses')
+            //     .document(widget.courseId)
+            //     .snapshots(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
                 return Center(

@@ -1,6 +1,6 @@
 import 'package:attend_classv2/screens/lecturer/course_details.dart';
 import 'package:attend_classv2/services/auth_services.dart';
-import 'package:attend_classv2/utilities/constants.dart';
+import 'package:attend_classv2/services/database_services.dart';
 import 'package:flutter/material.dart';
 
 class LecturerCourseScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _LecturerCourseScreenState extends State<LecturerCourseScreen> {
         centerTitle: true,
         actions: <Widget>[
           FlatButton(
-            color: Colors.black,
+            // color: Colors.black,
             child: Text(
               'logout',
               style: TextStyle(color: Colors.white),
@@ -31,10 +31,11 @@ class _LecturerCourseScreenState extends State<LecturerCourseScreen> {
       ),
       body: SafeArea(
           child: FutureBuilder(
-        future: usersRef
-            .document(widget.userId)
-            .collection('courses')
-            .getDocuments(),
+        future: DataBaseServices.getCoursesFuture(widget.userId),
+        // usersRef
+        //     .document(widget.userId)
+        //     .collection('courses')
+        //     .getDocuments(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return Center(

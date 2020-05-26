@@ -1,17 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:attend_classv2/screens/lecturer/add_to_attendance_log.dart';
 import 'package:attend_classv2/screens/student/Student_course_details_screen.dart';
 import 'package:attend_classv2/screens/user/profile.dart';
 import 'package:attend_classv2/services/auth_services.dart';
+import 'package:attend_classv2/services/compare_faces.dart';
 import 'package:attend_classv2/services/database_services.dart';
-import 'package:attend_classv2/utilities/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 class StudentCoursesScreen extends StatefulWidget {
@@ -52,39 +49,39 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
     super.initState();
   }
 
-  verifyFaces() async {
-    // File first = _verifingImage;
-    String first = _verifingImage;
-    File second = _image;
-    print('first $first');
-    print('second $second');
-    Uri uri = Uri.parse('https://api-us.faceplusplus.com/facepp/v3/compare');
+  // verifyFaces() async {
+  //   // File first = _verifingImage;
+  //   String first = _verifingImage;
+  //   File second = _image;
+  //   print('first $first');
+  //   print('second $second');
+  //   Uri uri = Uri.parse('https://api-us.faceplusplus.com/facepp/v3/compare');
 
-    http.MultipartRequest request = new http.MultipartRequest('POST', uri);
-    request.fields['api_key'] = apiKey;
-    request.fields['api_secret'] = apiSecret;
-    request.fields['image_url1'] = first;
-    // request.files.add(await http.MultipartFile.fromPath(
-    //     // 'image_file1',
-    //     'image_url1',
-    //     first
-    //     // .path
-    //     ,
-    //     contentType: new MediaType('application', 'x-tar')));
-    request.files.add(await http.MultipartFile.fromPath(
-        'image_file2', second.path,
-        contentType: new MediaType('application', 'x-tar')));
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      var result = await http.Response.fromStream(response);
-      // var response = await http.get(request);
-      var resultToJson = jsonDecode(result.body);
-      // var result = jsonDecode(response.body);
-      return resultToJson;
-    } else {
-      return 'Error';
-    }
-  }
+  //   http.MultipartRequest request = new http.MultipartRequest('POST', uri);
+  //   request.fields['api_key'] = apiKey;
+  //   request.fields['api_secret'] = apiSecret;
+  //   request.fields['image_url1'] = first;
+  //   // request.files.add(await http.MultipartFile.fromPath(
+  //   //     // 'image_file1',
+  //   //     'image_url1',
+  //   //     first
+  //   //     // .path
+  //   //     ,
+  //   //     contentType: new MediaType('application', 'x-tar')));
+  //   request.files.add(await http.MultipartFile.fromPath(
+  //       'image_file2', second.path,
+  //       contentType: new MediaType('application', 'x-tar')));
+  //   http.StreamedResponse response = await request.send();
+  //   if (response.statusCode == 200) {
+  //     var result = await http.Response.fromStream(response);
+  //     // var response = await http.get(request);
+  //     var resultToJson = jsonDecode(result.body);
+  //     // var result = jsonDecode(response.body);
+  //     return resultToJson;
+  //   } else {
+  //     return 'Error';
+  //   }
+  // }
 
   _getCurrentLocation() async {
     Position position = await Geolocator()
@@ -195,7 +192,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                   if (_verifingImage != null) {
                     verifyStudentProgress.show();
                     // verify face
-                    verifyFaces().then((result) {
+
+                    CompareFaces.verifyFaces(_verifingImage, _image)
+                        .then((result) {
                       print(result);
 
                       if (result.containsKey('confidence')) {
@@ -330,7 +329,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
             }),
         actions: <Widget>[
           FlatButton(
-            color: Colors.black,
+            // color: Colors.black,
             child: Text(
               'logout',
               style: TextStyle(color: Colors.white),
@@ -341,10 +340,11 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: usersRef
-              .document(widget.userId)
-              .collection('courses')
-              .snapshots(),
+          stream: DataBaseServices.getCoursesStream(widget.userId),
+          // usersRef
+          //     .document(widget.userId)
+          //     .collection('courses')
+          //     .snapshots(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -359,14 +359,16 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
                     String lecturerId = courses[index].data['lecturerId'];
-                    String coursesId = courses[index].documentID.trim();
+                    String courseId = courses[index].documentID.trim();
                     // is the course active
                     return StreamBuilder(
-                      stream: usersRef
-                          .document(lecturerId)
-                          .collection('courses')
-                          .document(coursesId)
-                          .snapshots(),
+                      stream: DataBaseServices.getCourseStream(
+                          lecturerId, courseId),
+                      // usersRef
+                      //     .document(lecturerId)
+                      //     .collection('courses')
+                      //     .document(coursesId)
+                      //     .snapshots(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           return Center(
@@ -384,7 +386,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                         //  is the student a moring evening etc.
                         return FutureBuilder(
-                          future: usersRef.document(widget.userId).get(),
+                          future: DataBaseServices.getUser(widget.userId),
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (!snapshot.hasData) {

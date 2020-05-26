@@ -282,4 +282,42 @@ class DataBaseServices {
     // .updateData({'asdasd': 'asdaa1'});
     print(indexNumber);
   }
+
+  // get the courses
+  static Future getCoursesFuture(String userId) {
+    return usersRef.document(userId).collection('courses').getDocuments();
+  }
+
+  static Stream getCoursesStream(String userId) {
+    return usersRef.document(userId).collection('courses').snapshots();
+  }
+
+  // get course
+  static Stream getCourseStream(String userId, String courseId) {
+    return usersRef
+        .document(userId)
+        .collection('courses')
+        .document(courseId)
+        .snapshots();
+  }
+
+  // get course reps
+  static Future getCourseRep(String userId, String courseId) {
+    return usersRef
+        .document(userId)
+        .collection('courses')
+        .document(courseId)
+        .collection('courseReps')
+        .getDocuments();
+  }
+
+// get studentgroups
+  static Future getStudentGroups(String userId) {
+    return usersRef.document(userId).collection('StudentGroup').getDocuments();
+  }
+
+  // get user
+  static Future getUser(String userId) {
+    return usersRef.document(userId).get();
+  }
 }

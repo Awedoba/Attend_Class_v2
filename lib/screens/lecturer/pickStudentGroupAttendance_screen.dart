@@ -1,5 +1,5 @@
 import 'package:attend_classv2/screens/lecturer/attendanceLog_screen.dart';
-import 'package:attend_classv2/utilities/constants.dart';
+import 'package:attend_classv2/services/database_services.dart';
 import 'package:flutter/material.dart';
 
 class PickStudentGroupAttendace extends StatefulWidget {
@@ -17,10 +17,11 @@ class _PickStudentGroupAttendaceState extends State<PickStudentGroupAttendace> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: usersRef
-          .document(widget.userId)
-          .collection('StudentGroup')
-          .getDocuments(),
+      future: DataBaseServices.getStudentGroups(widget.userId),
+      // usersRef
+      //     .document(widget.userId)
+      //     .collection('StudentGroup')
+      //     .getDocuments(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return Center(
