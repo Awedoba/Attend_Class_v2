@@ -6,12 +6,14 @@ class User {
   final String faceId;
   final String email;
   final String role;
+  final String indexNumber;
   User({
     this.id,
     this.name,
     this.role,
     this.email,
     this.faceId,
+    this.indexNumber,
   });
 
   factory User.fromDoc(DocumentSnapshot doc) {
@@ -21,6 +23,7 @@ class User {
       faceId: doc['faceId'],
       email: doc['email'],
       role: doc['role'],
+      indexNumber: doc['indexNumber'] ?? '',
     );
   }
 }

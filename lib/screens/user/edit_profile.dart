@@ -86,10 +86,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          'Edit profile',
+          'Add FaceId Picture',
           style: TextStyle(
             color: Colors.black,
           ),
@@ -112,13 +111,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    CircleAvatar(
-                      backgroundImage: _displayProfileImage(),
-                      radius: 60,
+                    Container(
+                      height: MediaQuery.of(context).size.height / 3,
+                      width: MediaQuery.of(context).size.height / 3,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: _displayProfileImage(),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
+
+                    // CircleAvatar(
+                    //   backgroundImage: _displayProfileImage(),
+                    //   radius: 60,
+                    // ),
                     FlatButton(
                       child: Text(
-                        'Edit profile Picture',
+                        'Add Faceid picture',
                         style: TextStyle(color: Colors.blue),
                       ),
                       onPressed: _handleImageFromGallary,
