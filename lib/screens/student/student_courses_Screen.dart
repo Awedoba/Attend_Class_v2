@@ -127,8 +127,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Widget displayCourse(
-      course,
-    ) {
+        course, String indexNumber, String studentGroup, int currentTotal) {
       return InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -136,7 +135,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               courseId: course.documentID,
               lecturerId: course.data['lecturerId'],
               courseName: course.data['name'],
-              studentId: widget.userId,
+              indexNumber: indexNumber,
+              studentGroup: studentGroup,
+              total: currentTotal,
             ),
           ),
         ),
@@ -273,7 +274,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               courseId: course.documentID,
               lecturerId: course.data['lecturerId'],
               courseName: course.data['name'],
-              studentId: widget.userId,
+              indexNumber: indexnumber,
+              studentGroup: studentGroup,
+              total: currentTotal,
             ),
           ),
         ),
@@ -419,7 +422,8 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                             }
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: displayCourse(courses[index]),
+                              child: displayCourse(courses[index], indexNumber,
+                                  studentGroup, currentTotal),
                             );
                           },
                         );

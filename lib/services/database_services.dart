@@ -320,4 +320,20 @@ class DataBaseServices {
   static Future getUser(String userId) {
     return usersRef.document(userId).get();
   }
+
+  // get student attendance for course
+  static Future getAttendanceOfStudent({
+    String studentGroup,
+    String lecturerId,
+    String courseId,
+    String indexNumber,
+  }) async {
+    String attendanceLogId =
+        lecturerId.trim() + '_' + courseId.trim() + '_' + studentGroup;
+    return await attendanceLog
+        .document(attendanceLogId)
+        .collection('students')
+        .document(indexNumber)
+        .get();
+  }
 }
