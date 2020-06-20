@@ -40,6 +40,7 @@ dependencies:
   http: ^0.12.1 
   http_parser: ^3.1.4
   progress_dialog: ^1.2.3
+  location: ^3.0.2
   # aws_ai: ^0.0.3 
 
 dev_dependencies:

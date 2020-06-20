@@ -61,6 +61,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(
                         height: 20.0,
                       ),
+                      Container(
+                        child: Text(
+                          'Email: ' + user.email,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
                       user.indexNumber == ''
                           ? SizedBox.shrink()
                           : Container(
@@ -72,18 +84,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                             ),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      Container(
-                        child: Text(
-                          'Email: ' + user.email,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

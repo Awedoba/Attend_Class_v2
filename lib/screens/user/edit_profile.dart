@@ -30,7 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // gets am image form the gallary and puts it in the _faceImage variable
   _handleImageFromGallary() async {
-    File imagePicker = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File imagePicker = await ImagePicker.pickImage(source: ImageSource.camera);
     if (imagePicker != null) {
       setState(() {
         _faceImage = imagePicker;

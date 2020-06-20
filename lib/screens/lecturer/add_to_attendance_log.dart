@@ -18,6 +18,7 @@ class _AddToAttendanceListState extends State<AddToAttendanceList> {
       _formkey.currentState.save();
       DataBaseServices.addToAttendanceList(_indexNumber, widget.courseId,
           widget.studentGroup, widget.currentTotal);
+
       Navigator.pop(context);
       // print(_indexNumber);
       // print(widget.courseId);

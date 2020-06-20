@@ -2,7 +2,7 @@ import 'package:attend_classv2/models/student_attendance.dart';
 import 'package:attend_classv2/models/user_model.dart';
 import 'package:attend_classv2/utilities/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 class DataBaseServices {
   static void updateUser(User user) {
@@ -11,7 +11,8 @@ class DataBaseServices {
     });
   }
 
-  static void startClass({userId, courseId, studentGroup, Position position}) {
+  static void startClass(
+      {userId, courseId, studentGroup, LocationData position}) {
     GeoPoint lecturerlocation =
         new GeoPoint(position.latitude, position.longitude);
     usersRef
@@ -140,6 +141,7 @@ class DataBaseServices {
 
   static void addToAttendanceList(String indexNumber, String courseId,
       String studentGroup, int currentTotal) {
+    // var result = 'Success';
     // check the index number belongs to a student who is in the student group the course is active for
     usersRef
         .where('indexNumber', isEqualTo: indexNumber)
@@ -151,7 +153,7 @@ class DataBaseServices {
         var studentDoc = studentDocs.documents;
         // if there is such a student check if he takes the course
         if (studentDoc[0].exists) {
-          print('student');
+          // print('student');
           usersRef
               .document(studentDoc[0].documentID)
               .collection('courses')
@@ -174,6 +176,8 @@ class DataBaseServices {
         } else {
           print('no student');
         }
+      } else {
+        // return 'fail: student is not part of the class';
       }
     });
   }

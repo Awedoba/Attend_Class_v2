@@ -1,4 +1,5 @@
 import 'package:attend_classv2/screens/lecturer/course_details.dart';
+import 'package:attend_classv2/screens/user/profile.dart';
 import 'package:attend_classv2/services/auth_services.dart';
 import 'package:attend_classv2/services/database_services.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,23 @@ class _LecturerCourseScreenState extends State<LecturerCourseScreen> {
       appBar: AppBar(
         title: Text('Courses'),
         centerTitle: true,
+        leading: FlatButton(
+            // color: Colors.black,
+            // child: Text('home'),
+            child: Icon(
+              Icons.home,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              print('object');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => ProfileScreen(
+                    userId: widget.userId,
+                  ),
+                ),
+              );
+            }),
         actions: <Widget>[
           FlatButton(
             // color: Colors.black,

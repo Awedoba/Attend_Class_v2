@@ -23,9 +23,9 @@ class _StudentCourseDetailState extends State<StudentCourseDetail> {
   void initState() {
     super.initState();
     setData().then((doc) {
-      print('hmm');
+      // print('hmm');
       if (doc.exists) {
-        print('object');
+        // print('object');
         setState(() {
           _attended = doc['attended'];
           _missed = doc['missed'];
@@ -33,7 +33,7 @@ class _StudentCourseDetailState extends State<StudentCourseDetail> {
         print(_attended);
       }
     });
-    print("attend: $_attended");
+    // print("attend: $_attended");
   }
 
   setData() async {
@@ -51,7 +51,7 @@ class _StudentCourseDetailState extends State<StudentCourseDetail> {
     // print('LID: ${widget.lecturerId}');
     // print('coursecode: ${widget.courseId}');
     // print('IN: ${widget.indexNumber}');
-    // print('total: ${widget.total}');
+    print('total: ${widget.total}');
     // print('CN: ${widget.courseName}');
 
     return Scaffold(

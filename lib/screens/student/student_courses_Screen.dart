@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:location/location.dart';
 
 class StudentCoursesScreen extends StatefulWidget {
   final String userId;
@@ -20,7 +21,7 @@ class StudentCoursesScreen extends StatefulWidget {
 }
 
 class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
-  final double confidenceStore = 80;
+  final double confidenceScore = 80;
   GeoPoint _classLocation;
   File _image;
   // File _verifingImage;
@@ -49,47 +50,42 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
     super.initState();
   }
 
-  // verifyFaces() async {
-  //   // File first = _verifingImage;
-  //   String first = _verifingImage;
-  //   File second = _image;
-  //   print('first $first');
-  //   print('second $second');
-  //   Uri uri = Uri.parse('https://api-us.faceplusplus.com/facepp/v3/compare');
-
-  //   http.MultipartRequest request = new http.MultipartRequest('POST', uri);
-  //   request.fields['api_key'] = apiKey;
-  //   request.fields['api_secret'] = apiSecret;
-  //   request.fields['image_url1'] = first;
-  //   // request.files.add(await http.MultipartFile.fromPath(
-  //   //     // 'image_file1',
-  //   //     'image_url1',
-  //   //     first
-  //   //     // .path
-  //   //     ,
-  //   //     contentType: new MediaType('application', 'x-tar')));
-  //   request.files.add(await http.MultipartFile.fromPath(
-  //       'image_file2', second.path,
-  //       contentType: new MediaType('application', 'x-tar')));
-  //   http.StreamedResponse response = await request.send();
-  //   if (response.statusCode == 200) {
-  //     var result = await http.Response.fromStream(response);
-  //     // var response = await http.get(request);
-  //     var resultToJson = jsonDecode(result.body);
-  //     // var result = jsonDecode(response.body);
-  //     return resultToJson;
-  //   } else {
-  //     return 'Error';
-  //   }
-  // }
-
   _getCurrentLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print('posi');
+    // Position position = await Geolocator()
+    //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    ///////////////////////////////////////////
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    //////////////////////////////////////////
     // print("position $position");
-    GeoPoint location = new GeoPoint(position.latitude, position.longitude);
+    // GeoPoint location =
+    GeoPoint position =
+        new GeoPoint(_locationData.latitude, _locationData.longitude);
     print("location: $location");
-    return location;
+
+    return position;
   }
 
   //get the distance between the student location and the class location
@@ -183,6 +179,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
         onDoubleTap: () {
           // student is in class allow  face verification
           // print(classLocation.latitude);
+          print('taptap');
           isInRange(classLocation).then((inRange) {
             if (inRange) {
               print(inRange);
@@ -200,7 +197,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                       if (result.containsKey('confidence')) {
                         print('confidence');
-                        if (result['confidence'] >= confidenceStore) {
+                        if (result['confidence'] >= confidenceScore) {
                           DataBaseServices.attendClass(
                             courseId: course.documentID,
                             studentName: studentName,
@@ -214,7 +211,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                           print('you have attended class');
                         } else {
                           _showSnackBar(
-                              'Failed: faces similarity too low', Colors.green);
+                              'Failed: faces similarity too low', Colors.red);
                         }
                       } else if ((result['faces1'].isEmpty) |
                           (result['faces2'].isEmpty)) {
@@ -378,6 +375,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                             child: CircularProgressIndicator(),
                           );
                         }
+                        var lecCourse = snapshot.data;
                         bool isActive = snapshot.data['isActive'];
                         String classActiveFor = snapshot.data['for'];
                         int currentTotal =
@@ -407,6 +405,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                                 location.latitude,
                                 location.longitude,
                               );
+
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: displayActiveCourse(
@@ -420,6 +419,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                                 ),
                               );
                             }
+                            currentTotal = lecCourse['$studentGroup' + 'Total'];
+
+                            // print('total: $currentTotal');
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: displayCourse(courses[index], indexNumber,
@@ -438,6 +440,85 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.help_outline),
+          tooltip: 'Help',
+          onPressed: () {
+            showDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 30, horizontal: 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Center(
+                                child: Text(
+                                  'Help',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Divider(
+                                thickness: 2,
+                                color: Colors.black,
+                              ),
+                              Text(
+                                '1. A green course is a course with an active class.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                '2. Tap a course to view your course details.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                '3. Doubletap a green course to to sign add your mane to the attendance list.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                '4. Longpress a green course as the class rep to add a  student to the attendance list.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  );
+                });
+          }),
     );
   }
 
@@ -515,7 +596,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
 //                     if (result.containsKey('confidence')) {
 //                       print('confidence');
-//                       if (result['confidence'] >= confidenceStore) {
+//                       if (result['confidence'] >= confidenceScore) {
 //                         DataBaseServices.attendClass(
 //                           courseId: course.documentID,
 //                           studentName: studentName,

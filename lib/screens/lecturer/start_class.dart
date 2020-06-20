@@ -1,6 +1,6 @@
 import 'package:attend_classv2/services/database_services.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 class StartClass extends StatefulWidget {
   final String userId, courseId;
@@ -10,12 +10,37 @@ class StartClass extends StatefulWidget {
 }
 
 class _StartClassState extends State<StartClass> {
-  Position _position;
+  // Position _position;
+  LocationData _locationData;
   _getCurrentLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print(position);
-    _position = position;
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    ///////////////////////////////////////////////////////////////
+    // Position position = await Geolocator()
+    //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // print(position);
+    // _position = position;
+    //////////////////////////////////////////////////////////////////
   }
 
   @override
@@ -56,14 +81,14 @@ class _StartClassState extends State<StartClass> {
                         ),
                         onTap: () {
                           _getCurrentLocation();
-                          if (_position != null) {
+                          if (_locationData != null) {
                             setState(() {
                               DataBaseServices.startClass(
                                 userId: widget.userId,
                                 courseId: widget.courseId,
                                 studentGroup:
                                     studentGroups[index].data['group'],
-                                position: _position,
+                                position: _locationData,
                               );
                               Navigator.pop(context);
                             });
